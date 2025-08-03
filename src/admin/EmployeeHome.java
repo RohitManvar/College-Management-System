@@ -6,43 +6,41 @@ import java.awt.event.*;
 import javax.swing.border.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.*;
 
-public class StudentHome extends JFrame implements ActionListener {
+public class EmployeeHome extends JFrame implements ActionListener {
     
-    // Student info
+    // Employee info
     private String username;
-    private String rollNo;
     
     // Components
     private JPanel sidebarPanel, mainContentPanel, headerPanel, contentPanel;
     private JLabel lblWelcome, lblTitle, lblUserInfo;
     private List<JButton> sidebarButtons;
     
-    // Custom colors for student theme (purple/blue theme)
-    private final Color PRIMARY_COLOR = new Color(155, 89, 182); // Purple theme for students
-    private final Color SECONDARY_COLOR = new Color(142, 68, 173);
+    // Custom colors for employee theme (slightly different from admin)
+    private final Color PRIMARY_COLOR = new Color(46, 204, 113); // Green theme for employees
+    private final Color SECONDARY_COLOR = new Color(39, 174, 96);
     private final Color ACCENT_COLOR = new Color(52, 152, 219);
-    private final Color SIDEBAR_COLOR = new Color(44, 62, 80);
+    private final Color SIDEBAR_COLOR = new Color(34, 49, 63);
     private final Color BACKGROUND_COLOR = new Color(236, 240, 241);
     private final Color CARD_COLOR = Color.WHITE;
     private final Color TEXT_COLOR = new Color(44, 62, 80);
     private final Color WHITE = Color.WHITE;
     
     // Sidebar button references
-    private JButton btnProfile, btnCourseDetails, btnExamResults, btnLogout;
+    private JButton btnProfile, btnAddStudent, btnStudentDetails, btnBachelorCourse, btnMasterCourse;
+    private JButton btnExamDetails, btnEnterMarks, btnUpdateStudent, btnNotepad, btnCalculator, btnExit;
     
-    public StudentHome(String username) {
-        super("University Management System - Student Portal");
-        this.username = username != null ? username : "Student";
+    public EmployeeHome(String username) {
+        super("University Management System - Employee Dashboard");
+        this.username = username != null ? username : "Employee";
         
         initializeComponents();
         setupLayout();
         setupStyling();
         setupEventHandlers();
-        setupWindowCloseHandler();
         
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setMinimumSize(new Dimension(1200, 700));
         setLocationRelativeTo(null);
@@ -57,18 +55,25 @@ public class StudentHome extends JFrame implements ActionListener {
         contentPanel = new JPanel();
         
         // Header components
-        lblTitle = new JLabel("Student Portal");
+        lblTitle = new JLabel("Employee Dashboard");
         lblWelcome = new JLabel("Welcome, " + username);
-        lblUserInfo = new JLabel("Logged in as: " + username + " (Student)");
+        lblUserInfo = new JLabel("Logged in as: " + username + " (Employee)");
         
         // Initialize sidebar buttons list
         sidebarButtons = new ArrayList<>();
         
-        // Create sidebar buttons (limited to student functions)
+        // Create sidebar buttons
         btnProfile = createSidebarButton("My Profile", "icons/profile.png");
-        btnCourseDetails = createSidebarButton("Course Details", "icons/courses.png");
-        btnExamResults = createSidebarButton("Examination & Results", "icons/results.png");
-        btnLogout = createSidebarButton("Logout", "icons/logout.png");
+        btnAddStudent = createSidebarButton("Add Student", "icons/add-student.png");
+        btnStudentDetails = createSidebarButton("Student Details", "icons/student-details.png");
+        btnBachelorCourse = createSidebarButton("Bachelor Courses", "icons/bachelor.png");
+        btnMasterCourse = createSidebarButton("Master Courses", "icons/master.png");
+        btnExamDetails = createSidebarButton("Examination Details", "icons/exam.png");
+        btnEnterMarks = createSidebarButton("Enter Marks", "icons/marks.png");
+        btnUpdateStudent = createSidebarButton("Update Student", "icons/update-student.png");
+        btnNotepad = createSidebarButton("Notepad", "icons/notepad.png");
+        btnCalculator = createSidebarButton("Calculator", "icons/calculator.png");
+        btnExit = createSidebarButton("Logout", "icons/exit.png");
     }
     
     private JButton createSidebarButton(String text, String iconPath) {
@@ -129,7 +134,7 @@ public class StudentHome extends JFrame implements ActionListener {
         sidebarHeader.setPreferredSize(new Dimension(280, 80));
         sidebarHeader.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 20));
         
-        JLabel sidebarTitle = new JLabel("STUDENT PORTAL");
+        JLabel sidebarTitle = new JLabel("EMPLOYEE PANEL");
         sidebarTitle.setFont(new Font("Arial", Font.BOLD, 18));
         sidebarTitle.setForeground(WHITE);
         sidebarHeader.add(sidebarTitle);
@@ -142,11 +147,22 @@ public class StudentHome extends JFrame implements ActionListener {
         
         // Add sections with separators
         addSidebarSection(sidebarContent, "PERSONAL", btnProfile);
-        addSidebarSection(sidebarContent, "ACADEMIC", btnCourseDetails, btnExamResults);
+        
+        addSidebarSection(sidebarContent, "STUDENT MANAGEMENT", 
+                         btnAddStudent, btnStudentDetails, btnUpdateStudent);
+        
+        addSidebarSection(sidebarContent, "ACADEMIC", 
+                         btnBachelorCourse, btnMasterCourse);
+        
+        addSidebarSection(sidebarContent, "EXAMINATIONS", 
+                         btnExamDetails, btnEnterMarks);
+        
+        addSidebarSection(sidebarContent, "UTILITIES", 
+                         btnNotepad, btnCalculator);
         
         // Add logout button at bottom
         sidebarContent.add(Box.createVerticalGlue());
-        addSidebarSection(sidebarContent, "", btnLogout);
+        addSidebarSection(sidebarContent, "", btnExit);
         
         JScrollPane scrollPane = new JScrollPane(sidebarContent);
         scrollPane.setBorder(null);
@@ -159,7 +175,7 @@ public class StudentHome extends JFrame implements ActionListener {
     
     private void addSidebarSection(JPanel parent, String sectionTitle, JButton... buttons) {
         if (!sectionTitle.isEmpty()) {
-            parent.add(Box.createVerticalStrut(15));
+            parent.add(Box.createVerticalStrut(10));
             
             JLabel sectionLabel = new JLabel(sectionTitle);
             sectionLabel.setFont(new Font("Arial", Font.BOLD, 12));
@@ -173,7 +189,7 @@ public class StudentHome extends JFrame implements ActionListener {
         
         for (JButton button : buttons) {
             parent.add(button);
-            parent.add(Box.createVerticalStrut(3));
+            parent.add(Box.createVerticalStrut(2));
         }
     }
     
@@ -205,7 +221,7 @@ public class StudentHome extends JFrame implements ActionListener {
         
         leftHeader.add(titlePanel);
         
-        // Right side - User info and current time
+        // Right side - User info
         JPanel rightHeader = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         rightHeader.setBackground(WHITE);
         
@@ -221,58 +237,23 @@ public class StudentHome extends JFrame implements ActionListener {
         mainContentPanel.setLayout(new BorderLayout());
         mainContentPanel.setBackground(BACKGROUND_COLOR);
         
-        // Create welcome message panel
-        JPanel welcomePanel = createWelcomePanel();
-        
-        // Create quick access cards
-        contentPanel.setLayout(new GridLayout(1, 3, 20, 20));
+        contentPanel.setLayout(new GridLayout(2, 3, 20, 20));
         contentPanel.setBorder(new EmptyBorder(30, 30, 30, 30));
         contentPanel.setBackground(BACKGROUND_COLOR);
         
-        // Add dashboard cards for student functions
-        addDashboardCard("My Profile", "View personal information and academic records", PRIMARY_COLOR, "👤");
-        addDashboardCard("Courses", "View enrolled courses and syllabus", ACCENT_COLOR, "📚");
-        addDashboardCard("Results", "Check examination results and grades", new Color(231, 76, 60), "📊");
+        // Add dashboard cards for employee functions
+        addDashboardCard("My Profile", "View and edit profile", PRIMARY_COLOR, "👤");
+        addDashboardCard("Students", "Manage student records", ACCENT_COLOR, "👨‍🎓");
+        addDashboardCard("Courses", "Academic programs", new Color(155, 89, 182), "📚");
+        addDashboardCard("Examinations", "Exam management", new Color(241, 196, 15), "📝");
+        addDashboardCard("Marks", "Grade management", new Color(231, 76, 60), "📊");
+        addDashboardCard("Tools", "Utility applications", new Color(52, 73, 94), "🛠️");
         
-        // Create main content with welcome and cards
-        JPanel mainContent = new JPanel(new BorderLayout());
-        mainContent.setBackground(BACKGROUND_COLOR);
-        mainContent.add(welcomePanel, BorderLayout.NORTH);
-        mainContent.add(contentPanel, BorderLayout.CENTER);
-        
-        JScrollPane scrollPane = new JScrollPane(mainContent);
+        JScrollPane scrollPane = new JScrollPane(contentPanel);
         scrollPane.setBorder(null);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         
         mainContentPanel.add(scrollPane, BorderLayout.CENTER);
-    }
-    
-    private JPanel createWelcomePanel() {
-        JPanel welcomePanel = new JPanel();
-        welcomePanel.setLayout(new BorderLayout());
-        welcomePanel.setBackground(PRIMARY_COLOR);
-        welcomePanel.setBorder(new EmptyBorder(40, 30, 40, 30));
-        
-        JLabel welcomeTitle = new JLabel("Welcome to Your Student Portal");
-        welcomeTitle.setFont(new Font("Arial", Font.BOLD, 28));
-        welcomeTitle.setForeground(WHITE);
-        welcomeTitle.setHorizontalAlignment(SwingConstants.CENTER);
-        
-        JLabel welcomeText = new JLabel("Access your academic information, view courses, and check results");
-        welcomeText.setFont(new Font("Arial", Font.PLAIN, 16));
-        welcomeText.setForeground(WHITE);
-        welcomeText.setHorizontalAlignment(SwingConstants.CENTER);
-        
-        JPanel textPanel = new JPanel();
-        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
-        textPanel.setBackground(PRIMARY_COLOR);
-        textPanel.add(welcomeTitle);
-        textPanel.add(Box.createVerticalStrut(10));
-        textPanel.add(welcomeText);
-        
-        welcomePanel.add(textPanel, BorderLayout.CENTER);
-        
-        return welcomePanel;
     }
     
     private void addDashboardCard(String title, String description, Color color, String icon) {
@@ -281,21 +262,21 @@ public class StudentHome extends JFrame implements ActionListener {
         card.setBackground(CARD_COLOR);
         card.setBorder(new CompoundBorder(
             new LineBorder(new Color(189, 195, 199), 1),
-            new EmptyBorder(30, 25, 30, 25)
+            new EmptyBorder(20, 20, 20, 20)
         ));
         card.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
         // Card header with icon
-        JPanel cardHeader = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        JPanel cardHeader = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         cardHeader.setBackground(CARD_COLOR);
         
         JLabel iconLabel = new JLabel(icon);
-        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 48));
+        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 32));
         iconLabel.setForeground(color);
         
         JPanel iconPanel = new JPanel();
         iconPanel.setBackground(color.brighter().brighter());
-        iconPanel.setBorder(new EmptyBorder(20, 25, 20, 25));
+        iconPanel.setBorder(new EmptyBorder(10, 15, 10, 15));
         iconPanel.add(iconLabel);
         
         cardHeader.add(iconPanel);
@@ -304,20 +285,18 @@ public class StudentHome extends JFrame implements ActionListener {
         JPanel cardContent = new JPanel();
         cardContent.setLayout(new BoxLayout(cardContent, BoxLayout.Y_AXIS));
         cardContent.setBackground(CARD_COLOR);
-        cardContent.setBorder(new EmptyBorder(20, 0, 0, 0));
+        cardContent.setBorder(new EmptyBorder(15, 0, 0, 0));
         
         JLabel titleLabel = new JLabel(title);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
         titleLabel.setForeground(TEXT_COLOR);
-        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
-        JLabel descLabel = new JLabel("<html><center>" + description + "</center></html>");
+        JLabel descLabel = new JLabel(description);
         descLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         descLabel.setForeground(new Color(127, 140, 141));
-        descLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         cardContent.add(titleLabel);
-        cardContent.add(Box.createVerticalStrut(10));
+        cardContent.add(Box.createVerticalStrut(5));
         cardContent.add(descLabel);
         
         // Hover effect
@@ -330,22 +309,6 @@ public class StudentHome extends JFrame implements ActionListener {
             @Override
             public void mouseExited(MouseEvent e) {
                 card.setBackground(CARD_COLOR);
-            }
-            
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                // Handle card clicks
-                switch (title) {
-                    case "My Profile":
-                        actionPerformed(new ActionEvent(btnProfile, ActionEvent.ACTION_PERFORMED, "My Profile"));
-                        break;
-                    case "Courses":
-                        actionPerformed(new ActionEvent(btnCourseDetails, ActionEvent.ACTION_PERFORMED, "Course Details"));
-                        break;
-                    case "Results":
-                        actionPerformed(new ActionEvent(btnExamResults, ActionEvent.ACTION_PERFORMED, "Examination & Results"));
-                        break;
-                }
             }
         });
         
@@ -366,25 +329,6 @@ public class StudentHome extends JFrame implements ActionListener {
         }
     }
     
-    private void setupWindowCloseHandler() {
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent windowEvent) {
-                handleLogout();
-            }
-        });
-    }
-    
-    private void handleLogout() {
-        try {
-            Conn c = new Conn();
-            String query = "DELETE FROM username";
-            c.s.executeUpdate(query);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
     @Override
     public void actionPerformed(ActionEvent ae) {
         String command = ae.getActionCommand();
@@ -400,55 +344,80 @@ public class StudentHome extends JFrame implements ActionListener {
                         JOptionPane.QUESTION_MESSAGE
                     );
                     if (choice == JOptionPane.YES_OPTION) {
-                        handleLogout();
-                        new Studentlogout();
                         setVisible(false);
+                        // Return to login screen
+                        new LoginMain();
+                    }
+                    break;
+                    
+                case "Calculator":
+                    try {
+                        Runtime.getRuntime().exec("calc.exe");
+                    } catch (Exception e) {
+                        // Try alternative calculator commands for different OS
+                        try {
+                            Runtime.getRuntime().exec("gnome-calculator");
+                        } catch (Exception e2) {
+                            JOptionPane.showMessageDialog(this, "Calculator not found on this system.");
+                        }
+                    }
+                    break;
+                    
+                case "Notepad":
+                    try {
+                        Runtime.getRuntime().exec("notepad.exe");
+                    } catch (Exception e) {
+                        // Try alternative text editor commands
+                        try {
+                            Runtime.getRuntime().exec("gedit");
+                        } catch (Exception e2) {
+                            JOptionPane.showMessageDialog(this, "Text editor not found on this system.");
+                        }
                     }
                     break;
                     
                 case "My Profile":
-                    new StudentProfile();
+                    new EmployeeProfile(username);
                     break;
                     
-                case "Course Details":
-                    new StudentCourse(username);
+                case "Add Student":
+                    new AddStudent();
                     break;
                     
-                case "Examination & Results":
-                    // Get student roll number from database
-                    try {
-                        Conn c = new Conn();
-                        Statement s = c.c.createStatement();
-                        ResultSet rs = s.executeQuery("SELECT * FROM student WHERE Username='" + username + "'");
-                        
-                        if (rs.next()) {
-                            rollNo = rs.getString("Roll_No");
-                            new Marks1(rollNo);
-                        } else {
-                            JOptionPane.showMessageDialog(this, 
-                                "Student record not found. Please contact administrator.", 
-                                "Error", 
-                                JOptionPane.ERROR_MESSAGE);
-                        }
-                    } catch (SQLException e) {
-                        JOptionPane.showMessageDialog(this, 
-                            "Database error: " + e.getMessage(), 
-                            "Error", 
-                            JOptionPane.ERROR_MESSAGE);
-                        e.printStackTrace();
-                    }
+                case "Student Details":
+                    new StudentDeatils();
+                    break;
+                    
+                case "Bachelor Courses":
+                    new BachelorCourse();
+                    break;
+                    
+                case "Master Courses":
+                    new MasterCourse();
+                    break;
+                    
+                case "Update Student":
+                    new UpdateStudent();
+                    break;
+                    
+                case "Enter Marks":
+                    new EnterMarks();
+                    break;
+                    
+                case "Examination Details":
+                    new ExaminationDeatils();
                     break;
                     
                 default:
                     JOptionPane.showMessageDialog(this, 
-                        "Feature '" + command + "' is available in student portal!", 
+                        "Feature '" + command + "' is available for employees!", 
                         "Information", 
                         JOptionPane.INFORMATION_MESSAGE);
                     break;
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, 
-                "Error accessing " + command + ": " + e.getMessage(), 
+                "Error opening " + command + ": " + e.getMessage(), 
                 "Error", 
                 JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
@@ -461,11 +430,11 @@ public class StudentHome extends JFrame implements ActionListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+         
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                new StudentHome("TestStudent");
+                new EmployeeHome("TestEmployee");
             }
         });
     }
-}
+}   
