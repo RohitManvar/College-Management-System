@@ -1,3 +1,6 @@
+
+## 🎓 College Management System - Java Swing
+
 A comprehensive desktop application built using Java Swing, designed to streamline academic and administrative workflows within a college environment.
 Key features include:
 
