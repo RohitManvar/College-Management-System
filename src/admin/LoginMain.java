@@ -1,4 +1,5 @@
-package admin;
+package com.mycompany.ums;
+
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
@@ -6,14 +7,14 @@ import java.sql.*;
 //import javax.swing.border.EmptyBorder;
 
 
-public class LoginMain extends JFrame implements ActionListener
+public class Ums extends JFrame implements ActionListener
 {
     JButton b1,b2,b3reg,b4,b5;
     JLabel lbl,lblpass;
     JTextField t1;
     JPasswordField p1;
     
-    LoginMain()
+    Ums()
     {
         super("Login");
         setLayout(null);
@@ -228,6 +229,6 @@ public class LoginMain extends JFrame implements ActionListener
         }
         public static void main(String[]args)
         {
-            new LoginMain( );
+            new Ums( );
         }
 }
