@@ -1,257 +1,471 @@
 package admin;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.border.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.sql.*;
-import net.proteanit.sql.DbUtils;
 
-public class StudentHome extends JFrame implements ActionListener
-{
-//    JLabel l1;
-      String um,unm,rllno;
-//    JTable table;
-   StudentHome(String unm)
-   {
-       super("Student Home");
-        setSize(1504,850);
-        this.unm=unm;
-        um=unm;
-        System.out.println(um);
-        ImageIcon i1 = new ImageIcon(ClassLoader.getSystemResource("Logo/facebook_profile_image.png"));
-        Image i2 = i1.getImage().getScaledInstance(500,450,Image.SCALE_DEFAULT);
-        ImageIcon i3 = new ImageIcon(i2);
-        JLabel image = new JLabel(i3);
-        //image.setBounds(350,0,200,200);
-        add(image);
-      
-        JMenuBar mb = new JMenuBar();
+public class StudentHome extends JFrame implements ActionListener {
+    
+    // Student info
+    private String username;
+    private String rollNo;
+    
+    // Components
+    private JPanel sidebarPanel, mainContentPanel, headerPanel, contentPanel;
+    private JLabel lblWelcome, lblTitle, lblUserInfo;
+    private List<JButton> sidebarButtons;
+    
+    // Custom colors for student theme (purple/blue theme)
+    private final Color PRIMARY_COLOR = new Color(155, 89, 182); // Purple theme for students
+    private final Color SECONDARY_COLOR = new Color(142, 68, 173);
+    private final Color ACCENT_COLOR = new Color(52, 152, 219);
+    private final Color SIDEBAR_COLOR = new Color(44, 62, 80);
+    private final Color BACKGROUND_COLOR = new Color(236, 240, 241);
+    private final Color CARD_COLOR = Color.WHITE;
+    private final Color TEXT_COLOR = new Color(44, 62, 80);
+    private final Color WHITE = Color.WHITE;
+    
+    // Sidebar button references
+    private JButton btnProfile, btnCourseDetails, btnExamResults, btnLogout;
+    
+    public StudentHome(String username) {
+        super("University Management System - Student Portal");
+        this.username = username != null ? username : "Student";
         
-        //Standard and Faculty add data
+        initializeComponents();
+        setupLayout();
+        setupStyling();
+        setupEventHandlers();
+        setupWindowCloseHandler();
         
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setMinimumSize(new Dimension(1200, 700));
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+    
+    private void initializeComponents() {
+        // Main panels
+        sidebarPanel = new JPanel();
+        headerPanel = new JPanel();
+        mainContentPanel = new JPanel();
+        contentPanel = new JPanel();
         
-        JMenu Profile  = new JMenu("Profile");
-        Profile.setForeground(Color.RED);
-        mb.add(Profile);
+        // Header components
+        lblTitle = new JLabel("Student Portal");
+        lblWelcome = new JLabel("Welcome, " + username);
+        lblUserInfo = new JLabel("Logged in as: " + username + " (Student)");
         
-        JMenuItem pro  = new JMenuItem("Profile");
-        pro.setBackground(Color.WHITE);
-        pro.addActionListener(this);
-        Profile.add(pro);
+        // Initialize sidebar buttons list
+        sidebarButtons = new ArrayList<>();
         
-        //Details of standard and faculty
-//        JMenu details  = new JMenu("View Details");
-//        details.setForeground(Color.RED);
-//        mb.add(details);
-//        
-//       
-//        
-//        JMenuItem sutdentdetails  = new JMenuItem("Student Deatils");
-//        sutdentdetails.setBackground(Color.WHITE);
-//        sutdentdetails.addActionListener(this);
-//        details.add(sutdentdetails);
+        // Create sidebar buttons (limited to student functions)
+        btnProfile = createSidebarButton("My Profile", "icons/profile.png");
+        btnCourseDetails = createSidebarButton("Course Details", "icons/courses.png");
+        btnExamResults = createSidebarButton("Examination & Results", "icons/results.png");
+        btnLogout = createSidebarButton("Logout", "icons/logout.png");
+    }
+    
+    private JButton createSidebarButton(String text, String iconPath) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Arial", Font.PLAIN, 14));
+        button.setForeground(WHITE);
+        button.setBackground(SIDEBAR_COLOR);
+        button.setBorder(new EmptyBorder(15, 20, 15, 20));
+        button.setFocusPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setHorizontalAlignment(SwingConstants.LEFT);
+        button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+        button.setPreferredSize(new Dimension(250, 50));
         
-        //Course
+        // Add hover effect
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(PRIMARY_COLOR);
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(SIDEBAR_COLOR);
+            }
+        });
         
-        JMenu course  = new JMenu("Course");
-        course.setForeground(Color.RED);
-        mb.add(course);
+        sidebarButtons.add(button);
+        return button;
+    }
+    
+    private void setupLayout() {
+        setLayout(new BorderLayout());
         
-        JMenuItem bachelorcourse  = new JMenuItem("Course Details");
-        bachelorcourse.setBackground(Color.WHITE);
-        bachelorcourse.addActionListener(this);
-        course.add(bachelorcourse);
-               
-//        JMenuItem mastercourse  = new JMenuItem("Master Courses");
-//        mastercourse.setBackground(Color.WHITE);
-//        mastercourse.addActionListener(this);
-//        course.add(mastercourse);
-//        
-//        JMenuItem phdcourse  = new JMenuItem("PHD Courses");
-//        phdcourse.setBackground(Color.WHITE);
-//        phdcourse.addActionListener(this);
-//        course.add(phdcourse);
+        // Setup sidebar
+        setupSidebar();
         
-
+        // Setup header
+        setupHeader();
         
-//        //Leave Details
-//        JMenu leavedeatils   = new JMenu("Leave Details");
-//        leavedeatils.setForeground(Color.RED);
-//        mb.add(applyleave);
-//        
-//        JMenuItem facultyleavedetails  = new JMenuItem("Faculty Leave Deatils");
-//        facultyleavedetails.setBackground(Color.WHITE);
-//        leavedeatils.add(facultyleavedetails);
-//        
-//        JMenuItem studentleavedetails  = new JMenuItem("Student Leave Deatils");
-//        studentleavedetails.setBackground(Color.WHITE);
-//        leavedeatils.add(studentleavedetails);
+        // Setup main content area
+        setupMainContent();
         
-        //Exams Deatisl
-        JMenu exam   = new JMenu("Examination");
-        exam.setForeground(Color.RED);
-        mb.add(exam);
+        // Add panels to frame
+        add(sidebarPanel, BorderLayout.WEST);
+        add(headerPanel, BorderLayout.NORTH);
+        add(mainContentPanel, BorderLayout.CENTER);
+    }
+    
+    private void setupSidebar() {
+        sidebarPanel.setLayout(new BorderLayout());
+        sidebarPanel.setPreferredSize(new Dimension(280, 0));
+        sidebarPanel.setBackground(SIDEBAR_COLOR);
         
-        JMenuItem examinationdetails  = new JMenuItem("Examination & Result");
-        examinationdetails.setBackground(Color.WHITE);
-        examinationdetails.addActionListener(this);
-        exam.add(examinationdetails);
+        // Sidebar header
+        JPanel sidebarHeader = new JPanel();
+        sidebarHeader.setBackground(SECONDARY_COLOR);
+        sidebarHeader.setPreferredSize(new Dimension(280, 80));
+        sidebarHeader.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 20));
         
-//        JMenuItem entermarks  = new JMenuItem("Student Enter Marks ");
-//        entermarks.setBackground(Color.WHITE);
-//        entermarks.addActionListener(this);
-//        exam.add(entermarks);
- 
+        JLabel sidebarTitle = new JLabel("STUDENT PORTAL");
+        sidebarTitle.setFont(new Font("Arial", Font.BOLD, 18));
+        sidebarTitle.setForeground(WHITE);
+        sidebarHeader.add(sidebarTitle);
         
+        // Sidebar content
+        JPanel sidebarContent = new JPanel();
+        sidebarContent.setLayout(new BoxLayout(sidebarContent, BoxLayout.Y_AXIS));
+        sidebarContent.setBackground(SIDEBAR_COLOR);
+        sidebarContent.setBorder(new EmptyBorder(10, 0, 10, 0));
         
-        //Fee  Deatils
-//        JMenu fee  = new JMenu(" Fee Deatils");
-//        fee.setForeground(Color.RED);
-//        mb.add(fee);
+        // Add sections with separators
+        addSidebarSection(sidebarContent, "PERSONAL", btnProfile);
+        addSidebarSection(sidebarContent, "ACADEMIC", btnCourseDetails, btnExamResults);
         
-//        JMenuItem feestructure  = new JMenuItem("Fee Structure");
-//        feestructure.setBackground(Color.WHITE);
-//        feestructure.addActionListener(this);
-//        fee.add(feestructure);
+        // Add logout button at bottom
+        sidebarContent.add(Box.createVerticalGlue());
+        addSidebarSection(sidebarContent, "", btnLogout);
         
-//        JMenuItem feeform  = new JMenuItem("Student Fee Deatils");
-//        feeform.setBackground(Color.WHITE);
-//        feeform.addActionListener(this);
-//        fee.add(feeform);
+        JScrollPane scrollPane = new JScrollPane(sidebarContent);
+        scrollPane.setBorder(null);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         
-        //Utilty
-//        JMenu utilty  = new JMenu("Utilty");
-//        utilty.setForeground(Color.RED);
-//        mb.add(utilty);
-//        
-//        
-//        
-//        JMenuItem notepad  = new JMenuItem("NotePad");
-//        notepad.setBackground(Color.WHITE);
-//        notepad.addActionListener(this);
-//        utilty.add(notepad);
-//        
-//        JMenuItem calc  = new JMenuItem("Calculator");
-//        calc.setBackground(Color.WHITE);
-//        calc.addActionListener(this);
-//        utilty.add(calc);
-        
-        
-        //Exit
-        JMenu exit  = new JMenu("Exit");
-        exit.setForeground(Color.RED);
-        mb.add(exit);
-        
-        
-        JMenuItem ex  = new JMenuItem("Logout");
-        ex.setBackground(Color.WHITE);
-        ex.addActionListener(this);
-        exit.add(ex);
-        
-        addWindowListener(new java.awt.event.WindowAdapter() {
-    @Override
-    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-//        if (JOptionPane.showConfirmDialog(null, "Are you sure you want to close this window?", "Close Window?", 
-//            JOptionPane.YES_NO_OPTION,
-//            JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){    
-//        }
-        try
-        {
-            Conn c = new Conn();
-            String qu="delete from username";
-            c.s.executeUpdate(qu);
+        sidebarPanel.add(sidebarHeader, BorderLayout.NORTH);
+        sidebarPanel.add(scrollPane, BorderLayout.CENTER);
+    }
+    
+    private void addSidebarSection(JPanel parent, String sectionTitle, JButton... buttons) {
+        if (!sectionTitle.isEmpty()) {
+            parent.add(Box.createVerticalStrut(15));
+            
+            JLabel sectionLabel = new JLabel(sectionTitle);
+            sectionLabel.setFont(new Font("Arial", Font.BOLD, 12));
+            sectionLabel.setForeground(new Color(149, 165, 166));
+            sectionLabel.setBorder(new EmptyBorder(5, 20, 5, 20));
+            sectionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            parent.add(sectionLabel);
+            
+            parent.add(Box.createVerticalStrut(5));
         }
-        catch(Exception e)
-        {
+        
+        for (JButton button : buttons) {
+            parent.add(button);
+            parent.add(Box.createVerticalStrut(3));
+        }
+    }
+    
+    private void setupHeader() {
+        headerPanel.setLayout(new BorderLayout());
+        headerPanel.setBackground(WHITE);
+        headerPanel.setBorder(new CompoundBorder(
+            new MatteBorder(0, 0, 1, 0, new Color(189, 195, 199)),
+            new EmptyBorder(15, 30, 15, 30)
+        ));
+        headerPanel.setPreferredSize(new Dimension(0, 80));
+        
+        // Left side - Title and welcome
+        JPanel leftHeader = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        leftHeader.setBackground(WHITE);
+        
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
+        lblTitle.setForeground(PRIMARY_COLOR);
+        
+        lblWelcome.setFont(new Font("Arial", Font.PLAIN, 14));
+        lblWelcome.setForeground(TEXT_COLOR);
+        
+        JPanel titlePanel = new JPanel();
+        titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
+        titlePanel.setBackground(WHITE);
+        titlePanel.add(lblTitle);
+        titlePanel.add(Box.createVerticalStrut(5));
+        titlePanel.add(lblWelcome);
+        
+        leftHeader.add(titlePanel);
+        
+        // Right side - User info and current time
+        JPanel rightHeader = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        rightHeader.setBackground(WHITE);
+        
+        lblUserInfo.setFont(new Font("Arial", Font.PLAIN, 14));
+        lblUserInfo.setForeground(TEXT_COLOR);
+        rightHeader.add(lblUserInfo);
+        
+        headerPanel.add(leftHeader, BorderLayout.WEST);
+        headerPanel.add(rightHeader, BorderLayout.EAST);
+    }
+    
+    private void setupMainContent() {
+        mainContentPanel.setLayout(new BorderLayout());
+        mainContentPanel.setBackground(BACKGROUND_COLOR);
+        
+        // Create welcome message panel
+        JPanel welcomePanel = createWelcomePanel();
+        
+        // Create quick access cards
+        contentPanel.setLayout(new GridLayout(1, 3, 20, 20));
+        contentPanel.setBorder(new EmptyBorder(30, 30, 30, 30));
+        contentPanel.setBackground(BACKGROUND_COLOR);
+        
+        // Add dashboard cards for student functions
+        addDashboardCard("My Profile", "View personal information and academic records", PRIMARY_COLOR, "👤");
+        addDashboardCard("Courses", "View enrolled courses and syllabus", ACCENT_COLOR, "📚");
+        addDashboardCard("Results", "Check examination results and grades", new Color(231, 76, 60), "📊");
+        
+        // Create main content with welcome and cards
+        JPanel mainContent = new JPanel(new BorderLayout());
+        mainContent.setBackground(BACKGROUND_COLOR);
+        mainContent.add(welcomePanel, BorderLayout.NORTH);
+        mainContent.add(contentPanel, BorderLayout.CENTER);
+        
+        JScrollPane scrollPane = new JScrollPane(mainContent);
+        scrollPane.setBorder(null);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        
+        mainContentPanel.add(scrollPane, BorderLayout.CENTER);
+    }
+    
+    private JPanel createWelcomePanel() {
+        JPanel welcomePanel = new JPanel();
+        welcomePanel.setLayout(new BorderLayout());
+        welcomePanel.setBackground(PRIMARY_COLOR);
+        welcomePanel.setBorder(new EmptyBorder(40, 30, 40, 30));
+        
+        JLabel welcomeTitle = new JLabel("Welcome to Your Student Portal");
+        welcomeTitle.setFont(new Font("Arial", Font.BOLD, 28));
+        welcomeTitle.setForeground(WHITE);
+        welcomeTitle.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        JLabel welcomeText = new JLabel("Access your academic information, view courses, and check results");
+        welcomeText.setFont(new Font("Arial", Font.PLAIN, 16));
+        welcomeText.setForeground(WHITE);
+        welcomeText.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        JPanel textPanel = new JPanel();
+        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
+        textPanel.setBackground(PRIMARY_COLOR);
+        textPanel.add(welcomeTitle);
+        textPanel.add(Box.createVerticalStrut(10));
+        textPanel.add(welcomeText);
+        
+        welcomePanel.add(textPanel, BorderLayout.CENTER);
+        
+        return welcomePanel;
+    }
+    
+    private void addDashboardCard(String title, String description, Color color, String icon) {
+        JPanel card = new JPanel();
+        card.setLayout(new BorderLayout());
+        card.setBackground(CARD_COLOR);
+        card.setBorder(new CompoundBorder(
+            new LineBorder(new Color(189, 195, 199), 1),
+            new EmptyBorder(30, 25, 30, 25)
+        ));
+        card.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        // Card header with icon
+        JPanel cardHeader = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        cardHeader.setBackground(CARD_COLOR);
+        
+        JLabel iconLabel = new JLabel(icon);
+        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 48));
+        iconLabel.setForeground(color);
+        
+        JPanel iconPanel = new JPanel();
+        iconPanel.setBackground(color.brighter().brighter());
+        iconPanel.setBorder(new EmptyBorder(20, 25, 20, 25));
+        iconPanel.add(iconLabel);
+        
+        cardHeader.add(iconPanel);
+        
+        // Card content
+        JPanel cardContent = new JPanel();
+        cardContent.setLayout(new BoxLayout(cardContent, BoxLayout.Y_AXIS));
+        cardContent.setBackground(CARD_COLOR);
+        cardContent.setBorder(new EmptyBorder(20, 0, 0, 0));
+        
+        JLabel titleLabel = new JLabel(title);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        titleLabel.setForeground(TEXT_COLOR);
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        JLabel descLabel = new JLabel("<html><center>" + description + "</center></html>");
+        descLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        descLabel.setForeground(new Color(127, 140, 141));
+        descLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        cardContent.add(titleLabel);
+        cardContent.add(Box.createVerticalStrut(10));
+        cardContent.add(descLabel);
+        
+        // Hover effect
+        card.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                card.setBackground(color.brighter().brighter().brighter());
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+                card.setBackground(CARD_COLOR);
+            }
+            
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // Handle card clicks
+                switch (title) {
+                    case "My Profile":
+                        actionPerformed(new ActionEvent(btnProfile, ActionEvent.ACTION_PERFORMED, "My Profile"));
+                        break;
+                    case "Courses":
+                        actionPerformed(new ActionEvent(btnCourseDetails, ActionEvent.ACTION_PERFORMED, "Course Details"));
+                        break;
+                    case "Results":
+                        actionPerformed(new ActionEvent(btnExamResults, ActionEvent.ACTION_PERFORMED, "Examination & Results"));
+                        break;
+                }
+            }
+        });
+        
+        card.add(cardHeader, BorderLayout.NORTH);
+        card.add(cardContent, BorderLayout.CENTER);
+        
+        contentPanel.add(card);
+    }
+    
+    private void setupStyling() {
+        // Additional styling is handled in component creation methods
+    }
+    
+    private void setupEventHandlers() {
+        // Add action listeners to all sidebar buttons
+        for (JButton button : sidebarButtons) {
+            button.addActionListener(this);
+        }
+    }
+    
+    private void setupWindowCloseHandler() {
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent windowEvent) {
+                handleLogout();
+            }
+        });
+    }
+    
+    private void handleLogout() {
+        try {
+            Conn c = new Conn();
+            String query = "DELETE FROM username";
+            c.s.executeUpdate(query);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-});
+    
+    @Override
+    public void actionPerformed(ActionEvent ae) {
+        String command = ae.getActionCommand();
         
-        setJMenuBar(mb);
-        setVisible(true);
-   }  
-   public void actionPerformed(ActionEvent ae)
-   {
-     String msg = ae.getActionCommand();
-     
-       switch (msg) {
-           case "Logout":
-               new Studentlogout();
-               setVisible(false);
-               break;
-//           case "Calculator":
-//               try
-//               {
-//                   Runtime.getRuntime().exec("calc.exe");
-//               }
-//               catch(Exception e)
-//               {
-//                   System.out.println(e);
-//               }     break;
-//           case "NotePad":
-//               try
-//               {
-//                   Runtime.getRuntime().exec("notepad.exe");
-//               }
-//               catch(Exception e)
-//               {
-//                   System.out.println(e);
-//               }      break;
-           
-//           case"Student Deatils":
-//               new StudentDeatils();
-//               break;
-           
-           case"Course Details":
-               new StudentCourse(unm);
-               break;
-//           case"Master Courses":
-//               new SMasterCourse();
-//               break;
-//           case"PHD Courses":
-//               new SPHDCourse();
-//               break;          
-//           case"Student Enter Marks ":
-//               new SEnterMarks();
-//               break;
-           case"Examination & Result":
-                   try
-                 {
-                     Conn c = new Conn();
-                     Statement s=c.c.createStatement();
-                     ResultSet rs=s.executeQuery("select * from student where Username='"+um+"'");
-                     while(rs.next())
-                     {
-
-                          rllno=rs.getString("Roll_No");
-         //                 cou=rs.getString("Course");
-         //                 dep=rs.getString("Department");
-                          //System.out.println(rllno+" "+cou+""+dep+"");
-
-                     }
-                 }
-                 catch(Exception e)
-                 {
-                     e.printStackTrace();
-                 }
-               new Marks1(rllno);
-               break;
-//           case"Fee Structure":
-//               new SFeeStructure();
-//               break;
-//           case"Student Fee Deatils":
-//               new StudentFeeForm();
-//               break;
-           case"Profile":
-               new StudentProfile();
-               break;    
-           default:
-               break;
-       }
-       
+        try {
+            switch (command) {
+                case "Logout":
+                    int choice = JOptionPane.showConfirmDialog(
+                        this,
+                        "Are you sure you want to logout?",
+                        "Confirm Logout",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE
+                    );
+                    if (choice == JOptionPane.YES_OPTION) {
+                        handleLogout();
+                        new Studentlogout();
+                        setVisible(false);
+                    }
+                    break;
+                    
+                case "My Profile":
+                    new StudentProfile();
+                    break;
+                    
+                case "Course Details":
+                    new StudentCourse(username);
+                    break;
+                    
+                case "Examination & Results":
+                    // Get student roll number from database
+                    try {
+                        Conn c = new Conn();
+                        Statement s = c.c.createStatement();
+                        ResultSet rs = s.executeQuery("SELECT * FROM student WHERE Username='" + username + "'");
+                        
+                        if (rs.next()) {
+                            rollNo = rs.getString("Roll_No");
+                            new Marks1(rollNo);
+                        } else {
+                            JOptionPane.showMessageDialog(this, 
+                                "Student record not found. Please contact administrator.", 
+                                "Error", 
+                                JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (SQLException e) {
+                        JOptionPane.showMessageDialog(this, 
+                            "Database error: " + e.getMessage(), 
+                            "Error", 
+                            JOptionPane.ERROR_MESSAGE);
+                        e.printStackTrace();
+                    }
+                    break;
+                    
+                default:
+                    JOptionPane.showMessageDialog(this, 
+                        "Feature '" + command + "' is available in student portal!", 
+                        "Information", 
+                        JOptionPane.INFORMATION_MESSAGE);
+                    break;
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, 
+                "Error accessing " + command + ": " + e.getMessage(), 
+                "Error", 
+                JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }
-    public static void main(String[]args)
-    {
-     new StudentHome("");
+    
+    public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new StudentHome("TestStudent");
+            }
+        });
     }
 }
