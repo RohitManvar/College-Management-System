@@ -33,7 +33,7 @@ public class StudentHome extends JFrame implements ActionListener {
     private JButton btnProfile, btnCourseDetails, btnExamResults, btnLogout;
     
     public StudentHome(String username) {
-        super("University Management System - Student Portal");
+        super("College Management System - Student Portal");
         this.username = username != null ? username : "Student";
         
         initializeComponents();
@@ -469,3 +469,4 @@ public class StudentHome extends JFrame implements ActionListener {
         });
     }
 }
+
