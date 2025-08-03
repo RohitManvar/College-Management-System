@@ -1,234 +1,380 @@
-package com.mycompany.ums;
-
+package admin;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.sql.*;
-//import javax.swing.border.EmptyBorder;
+import javax.swing.border.*;
 
-
-public class Ums extends JFrame implements ActionListener
-{
-    JButton b1,b2,b3reg,b4,b5;
-    JLabel lbl,lblpass;
-    JTextField t1;
-    JPasswordField p1;
+public class LoginMain extends JFrame implements ActionListener {
+    private JButton btnAdmin, btnEmployee, btnStudent, btnExit;
+    private JLabel lblTitle, lblUsername, lblPassword, lblWelcome;
+    private JTextField txtUsername;
+    private JPasswordField txtPassword;
+    private JPanel mainPanel, loginPanel, buttonPanel, headerPanel;
     
-    Ums()
-    {
-        super("Login");
-        setLayout(null);
-        //setBorder(new EmptyBorder(20,3,10,3));
-        ImageIcon i1 = new ImageIcon(ClassLoader.getSystemResource("logo/logn3.png"));
-        Image i2 = i1.getImage().getScaledInstance(250,200,Image.SCALE_DEFAULT);
-        ImageIcon i3 = new ImageIcon(i2);
-        JLabel image = new JLabel(i3);
-        image.setBounds(320,15,250,200);
-        add(image);
-       
-        lbl= new JLabel("Username  :");
-        lbl.setBounds(40,20,100,20);
-        add(lbl);
+    // Custom colors for modern design
+    private final Color PRIMARY_COLOR = new Color(41, 128, 185);
+    private final Color SECONDARY_COLOR = new Color(52, 73, 94);
+    private final Color ACCENT_COLOR = new Color(46, 204, 113);
+    private final Color BACKGROUND_COLOR = new Color(236, 240, 241);
+    private final Color TEXT_COLOR = new Color(44, 62, 80);
+    private final Color WHITE = Color.WHITE;
+    
+    public LoginMain() {
+        super("College Management System - Login");
+        initializeComponents();
+        setupLayout();
+        setupStyling();
+        setupEventHandlers();
         
-        
-        t1=new JTextField();
-        t1.setBounds(120,20,150,20);
-        add(t1);
- 
-        lblpass= new JLabel("Password  :");
-        lblpass.setBounds(40,70,100,20);
-        add(lblpass);       
-        
-        p1= new JPasswordField();
-        p1.setBounds(120,70,150,20);
-        add(p1);
-        
-        b1= new JButton("Admin");
-        b1.setBounds(30,140,80,30);
-        b1.setBackground(Color.BLACK);
-        b1.setForeground(Color.WHITE);
-        b1.addActionListener(this);
-        add(b1);
-        
-//        b2= new JButton("Cancel");
-//        b2.setBounds(180,180,80,20);
-//        b2.setBackground(Color.WHITE);
-//        b2.setForeground(Color.DARK_GRAY);
-//        b2.addActionListener(this);
-//        add(b2); 
-//        
-//        b3reg =new JButton("Sign Up");
-//        b3reg.setBounds(40,180,80,20);
-//        b3reg.setBackground(Color.WHITE);
-//        b3reg.setForeground(Color.DARK_GRAY);
-//        b3reg.setFont(new Font("serif",Font.BOLD,13));
-//        b3reg.addActionListener(this);
-//        add(b3reg);
-        
-        b4= new JButton("Employee");
-        b4.setBounds(115,140,90,30);
-        b4.setBackground(Color.BLACK);
-        b4.setForeground(Color.WHITE);
-        b4.addActionListener(this);
-        add(b4);
-        
-        b5= new JButton("Student");
-        b5.setBounds(210,140,80,30);
-        b5.setBackground(Color.BLACK);
-        b5.setForeground(Color.WHITE);
-        b5.addActionListener(this);
-        add(b5);
-        
-        
-        
-        setSize(600,300);
-        setLocation(500,250);
-        setVisible (true); 
-        
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(800, 600);
+        setLocationRelativeTo(null);
+        setResizable(false);
+        setVisible(true);
     }
-        public void actionPerformed(ActionEvent ae)
-        {
+    
+    private void initializeComponents() {
+        // Main panels
+        mainPanel = new JPanel(new BorderLayout());
+        headerPanel = new JPanel();
+        loginPanel = new JPanel();
+        buttonPanel = new JPanel();
+        
+        // Labels
+        lblTitle = new JLabel("College Management System", JLabel.CENTER);
+        lblWelcome = new JLabel("Please select your role and login", JLabel.CENTER);
+        lblUsername = new JLabel("Username:");
+        lblPassword = new JLabel("Password:");
+        
+        // Input fields
+        txtUsername = new JTextField(20);
+        txtPassword = new JPasswordField(20);
+        
+        // Buttons
+        btnAdmin = new JButton("Admin Login");
+        btnEmployee = new JButton("Employee Login");
+        btnStudent = new JButton("Student Login");
+        btnExit = new JButton("Exit");
+    }
+    
+    private void setupLayout() {
+        // Header panel
+        headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
+        headerPanel.setBorder(new EmptyBorder(30, 20, 20, 20));
+        headerPanel.add(lblTitle);
+        headerPanel.add(Box.createVerticalStrut(10));
+        headerPanel.add(lblWelcome);
+        
+        // Login panel with GridBagLayout for better control
+        loginPanel.setLayout(new GridBagLayout());
+        loginPanel.setBorder(new CompoundBorder(
+            new TitledBorder(BorderFactory.createLineBorder(PRIMARY_COLOR, 2), 
+                           "Login Credentials", 
+                           TitledBorder.CENTER, 
+                           TitledBorder.TOP,
+                           new Font("Arial", Font.BOLD, 14),
+                           PRIMARY_COLOR),
+            new EmptyBorder(20, 30, 20, 30)
+        ));
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        
+        // Username row
+        gbc.gridx = 0; gbc.gridy = 0; gbc.anchor = GridBagConstraints.EAST;
+        loginPanel.add(lblUsername, gbc);
+        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
+        loginPanel.add(txtUsername, gbc);
+        
+        // Password row
+        gbc.gridx = 0; gbc.gridy = 1; gbc.fill = GridBagConstraints.NONE; gbc.anchor = GridBagConstraints.EAST;
+        loginPanel.add(lblPassword, gbc);
+        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
+        loginPanel.add(txtPassword, gbc);
+        
+        // Button panel
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 20));
+        buttonPanel.setBorder(new EmptyBorder(20, 20, 30, 20));
+        buttonPanel.add(btnAdmin);
+        buttonPanel.add(btnEmployee);
+        buttonPanel.add(btnStudent);
+        buttonPanel.add(btnExit);
+        
+        // Main panel assembly
+        mainPanel.add(headerPanel, BorderLayout.NORTH);
+        mainPanel.add(loginPanel, BorderLayout.CENTER);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+        
+        add(mainPanel);
+    }
+    
+    private void setupStyling() {
+        // Main panel styling
+        mainPanel.setBackground(BACKGROUND_COLOR);
+        headerPanel.setBackground(BACKGROUND_COLOR);
+        loginPanel.setBackground(WHITE);
+        buttonPanel.setBackground(BACKGROUND_COLOR);
+        
+        // Title styling
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 28));
+        lblTitle.setForeground(PRIMARY_COLOR);
+        
+        lblWelcome.setFont(new Font("Arial", Font.PLAIN, 16));
+        lblWelcome.setForeground(TEXT_COLOR);
+        
+        // Label styling
+        Font labelFont = new Font("Arial", Font.BOLD, 14);
+        lblUsername.setFont(labelFont);
+        lblUsername.setForeground(TEXT_COLOR);
+        lblPassword.setFont(labelFont);
+        lblPassword.setForeground(TEXT_COLOR);
+        
+        // Input field styling
+        Font inputFont = new Font("Arial", Font.PLAIN, 14);
+        txtUsername.setFont(inputFont);
+        txtUsername.setBorder(new CompoundBorder(
+            new LineBorder(PRIMARY_COLOR, 1),
+            new EmptyBorder(8, 10, 8, 10)
+        ));
+        txtUsername.setPreferredSize(new Dimension(200, 35));
+        
+        txtPassword.setFont(inputFont);
+        txtPassword.setBorder(new CompoundBorder(
+            new LineBorder(PRIMARY_COLOR, 1),
+            new EmptyBorder(8, 10, 8, 10)
+        ));
+        txtPassword.setPreferredSize(new Dimension(200, 35));
+        
+        // Button styling
+        styleButton(btnAdmin, PRIMARY_COLOR);
+        styleButton(btnEmployee, ACCENT_COLOR);
+        styleButton(btnStudent, new Color(155, 89, 182));
+        styleButton(btnExit, new Color(231, 76, 60));
+        
+        // Add hover effects
+        addHoverEffect(btnAdmin, PRIMARY_COLOR);
+        addHoverEffect(btnEmployee, ACCENT_COLOR);
+        addHoverEffect(btnStudent, new Color(155, 89, 182));
+        addHoverEffect(btnExit, new Color(231, 76, 60));
+    }
+    
+    private void styleButton(JButton button, Color color) {
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setBackground(color);
+        button.setForeground(WHITE);
+        button.setBorder(new EmptyBorder(12, 20, 12, 20));
+        button.setFocusPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setPreferredSize(new Dimension(140, 45));
+    }
+    
+    private void addHoverEffect(JButton button, Color originalColor) {
+        Color hoverColor = originalColor.darker();
+        
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(hoverColor);
+            }
             
-                if(ae.getSource() == b1)
-                {
-                        String username = t1.getText();
-                        String password = p1.getText();
-//                        SProjectS sd =new SProjectS();
-//                        sd.l1.setText(t1.getText());
-                        
-                        String query = "select * from login where Username = '"+username+"' and Password = '"+password+ "'";
-                        
-                        try
-                        {
-                            Conn c = new Conn();
-//                            PreparedStatement preparedStatement = c.c.prepareStatement("select * from login where Username like ? and Password like ?");
-//                            preparedStatement.setString(1, username);
-//                            preparedStatement.setString(2, password);
-//                            ResultSet rs = preparedStatement.executeQuery();
-                              ResultSet rs = c.s.executeQuery(query);
-
-                            if(rs.next())
-                            {
-                               setVisible(false);
-                               new AdminHome();
-                            }
-                            else
-                            {
-                                JOptionPane.showMessageDialog(null,"Inavalid Username and Password");
-                                //setVisible(false);
-                                t1.setText(null);
-                                p1.setText(null);
-                            }
-                        }
-                        catch(Exception e)
-                        {
-                            e.printStackTrace();
-                        }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(originalColor);
+            }
+        });
+    }
+    
+    private void setupEventHandlers() {
+        btnAdmin.addActionListener(this);
+        btnEmployee.addActionListener(this);
+        btnStudent.addActionListener(this);
+        btnExit.addActionListener(this);
+        
+        // Add Enter key support
+        KeyAdapter enterKeyListener = new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    // Default to student login on Enter
+                    performLogin("student");
                 }
-                else if(ae.getSource() == b4)
-                {
-                    String username = t1.getText();
-                    String password = p1.getText();
-//                    SProjectS sd =new SProjectS();
-//                    sd.l1.setText(t1.getText());
-                    
-                        String query = "select * from teacher where Username = '"+username+"' and Password = '"+password+ "'";
-                        
-                        try
-                        {
-                            Conn c = new Conn();
-//                            PreparedStatement preparedStatement = c.c.prepareStatement("select * from login where Username like ? and Password like ?");
-//                            preparedStatement.setString(1, username);
-//                            preparedStatement.setString(2, password);
-//                            ResultSet rs = preparedStatement.executeQuery();
-                              ResultSet rs = c.s.executeQuery(query);
-                              
-                            if(rs.next())
-                            {
-                               setVisible(false);
-                               new EmployeeHome(t1.getText());
-                            }
-                            else
-                            {
-                                JOptionPane.showMessageDialog(null,"Inavalid Username and Password");
-                                //setVisible(false);
-                                t1.setText(null);
-                                p1.setText(null);
-                            }
-                        }
-                        catch(Exception e)
-                        {
-                            e.printStackTrace();
-                        }
-                }
-                else if(ae.getSource() == b5)
-                {
-                    String username = t1.getText();
-                    String password = p1.getText();
-                        
-                        
-                        String query = "select * from student where Username = '"+username+"' and Password = '"+password+ "'";
-                        
-                        try
-                        {
-                            Conn c = new Conn();
-//                            PreparedStatement preparedStatement = c.c.prepareStatement("select * from login where Username like ? and Password like ?");
-//                            preparedStatement.setString(1, username);
-//                            preparedStatement.setString(2, password);
-//                            ResultSet rs = preparedStatement.executeQuery();
-                              ResultSet rs = c.s.executeQuery(query);
-
-                            if(rs.next())
-                            {
-                                try
-                                {
-//                                    Conn con = new Conn();
-//                                    Statement s=c.c.createStatement();
-//                                    s
-                                    PreparedStatement ps = c.c.prepareStatement("insert into username (UNM,PASS) values(?,?)");
-                                    ps.setString(1, username);
-                                    ps.setString(2, password);
-                                    ps.executeUpdate();
-                                }
-                                catch(Exception e)
-                                {
-                                    System.out.println(e);
-                                }
-                                
-                               setVisible(false);
-                               new StudentHome(t1.getText());
-                               //new SProfile();
-//                                SProfile sd =new SProfile();
-//                                sd.l1.setText(username);
-//                                //sd.setVisible(false);
-                                
-                            }
-                            else
-                            {
-                                JOptionPane.showMessageDialog(null,"Inavalid Username and Password");
-                                //setVisible(false);
-                                t1.setText(null);
-                                p1.setText(null);
-                            }
-                        }
-                        catch(Exception e)
-                        {
-                            e.printStackTrace();
-                        }
-                }
-//                else if(ae.getSource() == b3)
-//                {
-//                    setVisible(false);
-//                    new RegistrationForm();
-//                }
-//                else if(ae.getSource() == b2)
-//                {
-//                    setVisible(false);
-//                }
-
+            }
+        };
+        
+        txtUsername.addKeyListener(enterKeyListener);
+        txtPassword.addKeyListener(enterKeyListener);
+    }
+    
+    @Override
+    public void actionPerformed(ActionEvent ae) {
+        if (ae.getSource() == btnAdmin) {
+            performLogin("admin");
+        } else if (ae.getSource() == btnEmployee) {
+            performLogin("employee");
+        } else if (ae.getSource() == btnStudent) {
+            performLogin("student");
+        } else if (ae.getSource() == btnExit) {
+            int choice = JOptionPane.showConfirmDialog(
+                this,
+                "Are you sure you want to exit?",
+                "Confirm Exit",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+            );
+            if (choice == JOptionPane.YES_OPTION) {
+                System.exit(0);
+            }
         }
-        public static void main(String[]args)
-        {
-            new Ums( );
+    }
+    
+    private void performLogin(String userType) {
+        String username = txtUsername.getText().trim();
+        String password = new String(txtPassword.getPassword());
+        
+        // Input validation
+        if (username.isEmpty() || password.isEmpty()) {
+            showErrorMessage("Please enter both username and password.");
+            return;
         }
+        
+        // Show loading cursor
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        
+        try {
+            boolean loginSuccessful = authenticateUser(username, password, userType);
+            
+            if (loginSuccessful) {
+                showSuccessMessage("Login successful! Welcome " + username);
+                setVisible(false);
+                
+                // Open appropriate home screen
+                switch (userType) {
+                    case "admin":
+                        new AdminHome();
+                        break;
+                    case "employee":
+                        new EmployeeHome(username);
+                        break;
+                    case "student":
+                        // Store username for student session
+                        storeStudentSession(username, password);
+                        new StudentHome(username);
+                        break;
+                }
+            } else {
+                showErrorMessage("Invalid username or password for " + userType + " login.");
+                clearFields();
+            }
+        } catch (Exception e) {
+            showErrorMessage("Database connection error. Please try again later.");
+            e.printStackTrace();
+        } finally {
+            setCursor(Cursor.getDefaultCursor());
+        }
+    }
+    
+    private boolean authenticateUser(String username, String password, String userType) throws SQLException {
+        String tableName;
+        switch (userType) {
+            case "admin":
+                tableName = "login";
+                break;
+            case "employee":
+                tableName = "teacher";
+                break;
+            case "student":
+                tableName = "student";
+                break;
+            default:
+                return false;
+        }
+        
+        // Use prepared statement to prevent SQL injection
+        String query = "SELECT * FROM " + tableName + " WHERE Username = ? AND Password = ?";
+        
+        Conn c = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            c = new Conn();
+            ps = c.c.prepareStatement(query);
+            ps.setString(1, username);
+            ps.setString(2, password);
+            rs = ps.executeQuery();
+            
+            return rs.next();
+        } finally {
+            // Clean up resources
+            if (rs != null) {
+                try { rs.close(); } catch (SQLException e) { /* ignore */ }
+            }
+            if (ps != null) {
+                try { ps.close(); } catch (SQLException e) { /* ignore */ }
+            }
+            // Note: Connection cleanup depends on your Conn class implementation
+        }
+    }
+    
+    private void storeStudentSession(String username, String password) {
+        Conn c = null;
+        PreparedStatement ps = null;
+        
+        try {
+            c = new Conn();
+            ps = c.c.prepareStatement("INSERT INTO username (UNM, PASS) VALUES (?, ?)");
+            ps.setString(1, username);
+            ps.setString(2, password);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error storing student session: " + e.getMessage());
+        } finally {
+            // Clean up resources
+            if (ps != null) {
+                try { ps.close(); } catch (SQLException e) { /* ignore */ }
+            }
+            // Note: Connection cleanup depends on your Conn class implementation
+        }
+    }
+    
+    private void showErrorMessage(String message) {
+        JOptionPane.showMessageDialog(
+            this,
+            message,
+            "Login Error",
+            JOptionPane.ERROR_MESSAGE
+        );
+    }
+    
+    private void showSuccessMessage(String message) {
+        JOptionPane.showMessageDialog(
+            this,
+            message,
+            "Login Successful",
+            JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+    
+    private void clearFields() {
+        txtUsername.setText("");
+        txtPassword.setText("");
+        txtUsername.requestFocus();
+    }
+    
+    public static void main(String[] args) {
+        // Set system look and feel
+        try {
+            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        // Run on EDT
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new LoginMain();
+            }
+        });
+    }
 }
